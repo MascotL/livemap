@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://mascotl.cn/">
-    <img src="https://github.com/MascotL/livemap/blob/main/.github/assets/app-logo.png" width="160" alt="LiveMap Logo">
+    <img src=".github/assets/app-logo.png" width="160" alt="LiveMap Logo">
   </a>
 </p>
 
@@ -13,15 +13,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/MascotL/live-map/blob/main/LICENSE">
-    <img alt="License" src="https://img.shields.io/badge/license-AGPL--3.0-green?logo=opensourceinitiative&style=flat">
-  </a>
-  <a href="https://github.com/MascotL/live-map/releases">
-    <img alt="Platform" src="https://img.shields.io/badge/platform-Windows-blue?logo=windows&style=flat">
-  </a>
-  <a href="https://github.com/MascotL/live-map/releases">
-    <img alt="Release" src="https://img.shields.io/github/v/release/MascotL/live-map?logo=github&style=flat">
-  </a>
+  <a href="https://github.com/MascotL/livemap"><img alt="License" src="https://img.shields.io/badge/license-AGPL--3.0-green?logo=opensourceinitiative&style=flat"></a>
+  <a href="https://github.com/MascotL/livemap/releases"><img alt="Platform" src="https://img.shields.io/badge/platform-Windows-blue?logo=windows&style=flat"></a>
+  <a href="https://github.com/MascotL/livemap/releases"><img alt="Release" src="https://img.shields.io/github/v/release/MascotL/livemap?logo=github&style=flat"></a>
 </p>
 
 ## 功能特性
