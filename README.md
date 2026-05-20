@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/MascotL/livemap"><img alt="License" src="https://img.shields.io/badge/license-AGPL--3.0-green?logo=opensourceinitiative&style=flat"></a>
+  <a href="https://github.com/MascotL/livemap/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-AGPL--3.0-green?logo=opensourceinitiative&style=flat"></a>
   <a href="https://github.com/MascotL/livemap/releases"><img alt="Platform" src="https://img.shields.io/badge/platform-Windows-blue?logo=windows&style=flat"></a>
   <a href="https://github.com/MascotL/livemap/releases"><img alt="Release" src="https://img.shields.io/github/v/release/MascotL/livemap?logo=github&style=flat&include_prereleases"></a>
 </p>
