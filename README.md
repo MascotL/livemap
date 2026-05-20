@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://mascotl.cn/">
-    <img src=".github/assets/app-logo.png" width="160" alt="LiveMap Logo">
+    <img src="assets/.github/assets/app-logo.png" width="160" alt="LiveMap Logo">
   </a>
 </p>
 
