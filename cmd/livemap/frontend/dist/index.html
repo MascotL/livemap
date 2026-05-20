@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LiveMap</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <svg class="icon-sprite" aria-hidden="true">
+      <symbol id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></symbol>
+      <symbol id="icon-stop" viewBox="0 0 24 24"><path d="M7 7h10v10H7z" /></symbol>
+      <symbol id="icon-restart" viewBox="0 0 24 24"><path d="M12 5V2L7.5 6.5 12 11V8a4 4 0 1 1-4 4H5a7 7 0 1 0 7-7z" /></symbol>
+      <symbol id="icon-cog" viewBox="0 0 24 24"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.4-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.6A8 8 0 0 0 7 6.6l-2.4-1-2 3.4 2 1.5A9 9 0 0 0 4.5 12c0 .5 0 1 .1 1.5l-2 1.5 2 3.4 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.6h4l.4-2.6a8 8 0 0 0 2.6-1.5l2.4 1 2-3.4zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" /></symbol>
+      <symbol id="icon-diamond" viewBox="0 0 24 24"><path d="M12 3 21 12 12 21 3 12z" /></symbol>
+      <symbol id="icon-log" viewBox="0 0 24 24"><path d="M5 3h14v18H5zM8 8h8v2H8zm0 4h8v2H8zm0 4h5v2H8z" /></symbol>
+      <symbol id="icon-debug" viewBox="0 0 24 24"><path d="M12 5c5 0 8.8 4.2 10 7-1.2 2.8-5 7-10 7s-8.8-4.2-10-7c1.2-2.8 5-7 10-7zm0 3.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z" /></symbol>
+      <symbol id="icon-minus" viewBox="0 0 24 24"><path d="M6 11h12v2H6z" /></symbol>
+      <symbol id="icon-close" viewBox="0 0 24 24"><path d="m7 5.6 5 5 5-5L18.4 7l-5 5 5 5-1.4 1.4-5-5-5 5L5.6 17l5-5-5-5z" /></symbol>
+    </svg>
+
+    <div class="window-controls">
+      <button class="window-button minimize" id="minimizeBtn" type="button" aria-label="最小化">
+        <svg><use href="#icon-minus"></use></svg>
+      </button>
+      <button class="window-button close" id="closeBtn" type="button" aria-label="关闭">
+        <svg><use href="#icon-close"></use></svg>
+      </button>
+    </div>
+
+    <main class="shell">
+      <aside class="sidebar">
+        <section class="brand drag-region">
+          <div class="mark">R</div>
+          <div>
+            <h1>LiveMap</h1>
+            <p id="statusText">workflow 未运行</p>
+          </div>
+        </section>
+
+        <section class="run-panel" id="runPanel">
+          <button class="pill-action primary-run" id="startBtn" type="button">
+            <svg class="pill-icon"><use href="#icon-play"></use></svg>
+            <span>开始运行</span>
+          </button>
+          <div class="running-actions" id="runningActions" hidden>
+            <button class="pill-action stop-run" id="stopBtn" type="button">
+              <svg class="pill-icon"><use href="#icon-stop"></use></svg>
+              <span>停止运行</span>
+            </button>
+            <button class="pill-action restart-run" id="restartBtn" type="button">
+              <svg class="pill-icon"><use href="#icon-restart"></use></svg>
+            </button>
+          </div>
+        </section>
+
+        <nav class="tabs" aria-label="主导航">
+          <button class="tab active" data-tab="config" type="button"><svg><use href="#icon-cog"></use></svg><span>配置</span></button>
+          <button class="tab" data-tab="debug" type="button"><svg><use href="#icon-debug"></use></svg><span>调试</span></button>
+          <button class="tab" data-tab="test" type="button"><svg><use href="#icon-diamond"></use></svg><span>测试</span></button>
+        </nav>
+
+        <nav class="tabs bottom-tabs" aria-label="日志导航">
+          <button class="tab" data-tab="logs" type="button"><svg><use href="#icon-log"></use></svg><span>日志</span></button>
+        </nav>
+      </aside>
+
+      <section class="content">
+        <header class="content-header drag-region">
+          <div>
+            <h2 id="sectionTitle">配置</h2>
+          </div>
+          <div class="header-actions">
+            <button class="ghost-button" id="saveBtn" type="button">保存配置</button>
+            <button class="ghost-button" id="clearLogsBtn" type="button" hidden>清空日志</button>
+          </div>
+        </header>
+
+        <section class="panel active" id="panel-config">
+          <form class="config-grid" id="configForm">
+            <fieldset class="config-group">
+              <legend>基础截图</legend>
+              <label class="field">
+                <span>目标进程</span>
+                <input id="processName" name="processName" type="text" autocomplete="off" />
+              </label>
+
+              <label class="field">
+                <span>截图后端</span>
+                <select id="backend" name="backend">
+                  <option value="wgc">Windows.Graphics.Capture</option>
+                  <option value="printwindow">PrintWindow</option>
+                  <option value="desktop">DesktopCopy</option>
+                  <option value="">自动选择</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>FPS</span>
+                <input id="fps" name="fps" type="number" min="1" max="240" step="1" />
+              </label>
+
+              <label class="field">
+                <span>小地图范围</span>
+                <input id="minimapRegion" type="text" readonly />
+              </label>
+            </fieldset>
+
+            <fieldset class="config-group">
+              <legend>地图匹配</legend>
+              <input id="worldMapPath" name="worldMapPath" type="hidden" />
+
+              <label class="field">
+                <span>小地图缩放分母</span>
+                <input id="globalMinimapScale" type="number" min="1" max="32" step="1" />
+              </label>
+
+              <label class="field">
+                <span>大地图缩放分母</span>
+                <input id="globalMapScale" type="number" min="1" max="32" step="1" />
+              </label>
+
+              <label class="field">
+                <span>全局并行数</span>
+                <input id="globalWorkers" type="number" min="1" max="64" step="1" />
+              </label>
+
+              <label class="field">
+                <span>全局超时毫秒</span>
+                <input id="globalTimeoutMS" type="number" min="500" max="60000" step="500" />
+              </label>
+
+              <label class="field">
+                <span>匹配阈值</span>
+                <input id="matchThreshold" type="number" min="0.1" max="0.99" step="0.01" />
+              </label>
+            </fieldset>
+
+            <fieldset class="config-group">
+              <legend>局部跟踪</legend>
+              <label class="field">
+                <span>局部 ROI</span>
+                <input id="localROI" type="number" min="50" max="2000" step="10" />
+              </label>
+
+              <label class="field">
+                <span>扩大 ROI</span>
+                <input id="localExpandedROI" type="number" min="50" max="3000" step="10" />
+              </label>
+
+              <label class="field">
+                <span>局部并行数</span>
+                <input id="localWorkers" type="number" min="1" max="64" step="1" />
+              </label>
+
+              <label class="field">
+                <span>全局搜索热键</span>
+                <input id="globalSearchHotkey" type="text" autocomplete="off" />
+              </label>
+
+              <label class="switch-row field wide">
+                <span>
+                  <strong>自动全局搜索</strong>
+                  <small>局部追踪丢失后自动执行全局搜索，不再等待热键</small>
+                </span>
+                <input id="autoGlobalSearch" type="checkbox" />
+              </label>
+            </fieldset>
+          </form>
+        </section>
+
+        <section class="panel" id="panel-debug">
+          <div class="setting-list">
+            <label class="switch-row">
+              <span>
+                <strong>检视窗口</strong>
+                <small>显示当前工作流视频帧和识别标注</small>
+              </span>
+              <input id="inspectWindow" type="checkbox" />
+            </label>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-test">
+          <div class="test-layout">
+            <fieldset class="config-group">
+              <legend>算法测试</legend>
+              <label class="field wide">
+                <span>小地图测试图片</span>
+                <div class="inline-field">
+                  <input id="testImagePath" type="text" autocomplete="off" placeholder="选择或输入本机图片路径" />
+                  <button class="ghost-button" id="chooseTestImageBtn" type="button">选择图片</button>
+                </div>
+              </label>
+
+              <label class="field">
+                <span>测试超时毫秒</span>
+                <input id="testTimeoutMS" type="number" min="1000" max="120000" step="1000" value="30000" />
+              </label>
+
+              <div class="test-actions">
+                <button class="pill-action primary-run" id="startMatchTestBtn" type="button">
+                  <svg class="pill-icon"><use href="#icon-play"></use></svg>
+                  <span>开始测试</span>
+                </button>
+                <button class="pill-action stop-run" id="stopMatchTestBtn" type="button" disabled>
+                  <svg class="pill-icon"><use href="#icon-stop"></use></svg>
+                  <span>停止测试</span>
+                </button>
+              </div>
+            </fieldset>
+
+            <div class="result-card">
+              <strong id="matchTestMessage">等待测试</strong>
+              <dl>
+                <div><dt>X</dt><dd id="matchTestX">-</dd></div>
+                <div><dt>Y</dt><dd id="matchTestY">-</dd></div>
+                <div><dt>置信度</dt><dd id="matchTestScore">-</dd></div>
+                <div><dt>耗时</dt><dd id="matchTestElapsed">-</dd></div>
+              </dl>
+              <figure class="match-preview" id="matchPreview" hidden>
+                <figcaption>结果区域预览：大地图裁剪为不透明底图，小地图测试图以半透明方式叠加在匹配坐标上。</figcaption>
+                <img id="matchPreviewImage" alt="地图匹配结果叠加预览" />
+              </figure>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel log-panel" id="panel-logs">
+          <pre id="logOutput"></pre>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

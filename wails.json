@@ -1,0 +1,13 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "livemap",
+  "outputfilename": "livemap",
+  "frontend:dir": "cmd/livemap/frontend",
+  "frontend:install": "",
+  "frontend:build": "",
+  "frontend:dev:watcher": "",
+  "author": {
+    "name": "mascotl",
+    "email": ""
+  }
+}
