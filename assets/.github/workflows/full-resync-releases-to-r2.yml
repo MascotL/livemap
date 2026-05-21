@@ -1,0 +1,53 @@
+name: Full resync releases to R2
+run-name: ${{ inputs.tag && format('[resync] {0}', inputs.tag) || '[resync] all' }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Optional release tag. Empty means full sync."
+        required: false
+        type: string
+      delete_extra:
+        description: "Delete R2 files that do not exist in GitHub releases?"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: r2-release-sync-${{ github.repository }}
+  cancel-in-progress: false
+
+env:
+  R2_BUCKET: ${{ vars.R2_BUCKET }}
+  R2_RELEASE_PREFIX: ${{ vars.R2_RELEASE_PREFIX }}
+  DOWNLOAD_BASE_URL: ${{ vars.DOWNLOAD_BASE_URL }}
+  R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+
+jobs:
+  resync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure R2 credentials
+        run: |
+          aws configure set aws_access_key_id "${{ secrets.R2_ACCESS_KEY_ID }}"
+          aws configure set aws_secret_access_key "${{ secrets.R2_SECRET_ACCESS_KEY }}"
+          aws configure set region auto
+
+      - name: Resync releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESYNC_TAG: ${{ inputs.tag }}
+          DELETE_EXTRA: ${{ inputs.delete_extra }}
+        run: |
+          python .github/workflows/r2_release_sync/full_resync.py
