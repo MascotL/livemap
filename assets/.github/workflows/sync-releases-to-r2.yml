@@ -1,0 +1,52 @@
+name: Sync releases to R2
+run-name: "[sync] ${{ github.event.release.tag_name }} - ${{ github.event.action }}"
+
+on:
+  release:
+    types: [published, edited, deleted, unpublished]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: r2-release-sync-${{ github.repository }}
+  cancel-in-progress: false
+
+env:
+  R2_BUCKET: ${{ vars.R2_BUCKET }}
+  R2_RELEASE_PREFIX: ${{ vars.R2_RELEASE_PREFIX }}
+  DOWNLOAD_BASE_URL: ${{ vars.DOWNLOAD_BASE_URL }}
+  R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure R2 credentials
+        run: |
+          aws configure set aws_access_key_id "${{ secrets.R2_ACCESS_KEY_ID }}"
+          aws configure set aws_secret_access_key "${{ secrets.R2_SECRET_ACCESS_KEY }}"
+          aws configure set region auto
+
+      - name: Publish release to R2
+        if: github.event_name == 'release' && github.event.action == 'published'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python .github/workflows/r2_release_sync/published.py
+
+      - name: Sync edited release to R2
+        if: github.event_name == 'release' && github.event.action == 'edited'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python .github/workflows/r2_release_sync/edited.py
+
+      - name: Remove release from R2
+        if: github.event_name == 'release' && contains(fromJson('["deleted","unpublished"]'), github.event.action)
+        run: |
+          python .github/workflows/r2_release_sync/removed.py
